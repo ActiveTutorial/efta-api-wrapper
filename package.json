@@ -1,0 +1,28 @@
+{
+  "name": "efta-api-wrapper",
+  "version": "1.0.0",
+  "description": "Typescript API wrapper for accessing Epstein files from justice.gov",
+  "homepage": "https://github.com/ActiveTutorial/efta-api-wrapper#readme",
+  "bugs": {
+    "url": "https://github.com/ActiveTutorial/efta-api-wrapper/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ActiveTutorial/efta-api-wrapper.git"
+  },
+  "license": "MIT",
+  "author": "Active Tutorial",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "npm run build && node --test"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3"
+  }
+}
