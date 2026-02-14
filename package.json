@@ -15,7 +15,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
@@ -24,5 +26,10 @@
   "devDependencies": {
     "@types/node": "^25.2.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "node-tls-client": "^2.1.0",
+    "pdfjs-dist": "^5.4.624"
   }
 }
