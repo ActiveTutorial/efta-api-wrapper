@@ -43,6 +43,7 @@
 
     "esModuleInterop": true,
     "moduleResolution": "nodenext",
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
 }
