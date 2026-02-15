@@ -9,8 +9,8 @@ async function main() {
     console.log(`Visibility: ${meta.visibility}`);
     console.log(`Last Modified: ${meta.lastModefied.toISOString()}`);
 
-    // Fetch first page
-    const page = await dataset.getDatasetPage(9, 1);
+    // Fetch page
+    const page = await dataset.getDatasetPage(9, -3);
     console.log(`\nDataset Page ${page.page}:`);
     page.files.forEach((file, i) => {
       console.log(`${i + 1}. ${file.filename} -> ${file.url}`);

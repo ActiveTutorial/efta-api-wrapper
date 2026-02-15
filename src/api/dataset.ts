@@ -80,6 +80,14 @@ export const dataset = {
   },
 
   async getDatasetPage(setId: number, page: number = 0): Promise<DatasetPage> {
+    if(page === -1) {
+      page = 2147483648;
+    } else if (page < 0) {
+      page = (await dataset.getDatasetPage(setId, -1)).page + page;
+    }
+    if (page < 0) {
+        page = 0;
+    }
     const session = await createSession();
 
     try {
