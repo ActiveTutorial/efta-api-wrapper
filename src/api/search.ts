@@ -1,14 +1,15 @@
 import { initTLS, destroyTLS, Session, ClientIdentifier } from "node-tls-client";
 
-export type SearchMatch = {
-  fileId: string;      // filename without extension
+export type SearchResult = {
+  fileId: string;
   setid: number;
-  match: string[];     // array of highlight content
+  url: string;
+  match: string[];
 };
 
-export type SearchResult = {
+export type SearchResults = {
   amount: number;
-  matches: SearchMatch[];
+  results: SearchResult[];
 };
 
 async function createSession() {
@@ -24,13 +25,14 @@ export const search = {
     keys: string[],
     offset: number = 0,
     limit: number = 10
-  ): Promise<SearchResult> {
+  ): Promise<SearchResults> {
     const session = await createSession();
-    const results: SearchMatch[] = [];
+    const results: SearchResult[] = [];
     try {
       const query = encodeURIComponent(keys.join(" "));
 
       // Calculate which pages to fetch
+      // offste + limit to pages conversion
       let remaining = limit;
       let page = Math.floor(offset / 10) + 1; // API pages are 1-based
       let skipInPage = offset % 10;
@@ -66,6 +68,7 @@ export const search = {
         const pageResults = hits.slice(skipInPage, skipInPage + remaining).map((hit: any) => {
           const filename: string = hit._source?.key ?? "";
           const highlightArr: string[] = hit.highlight?.content ?? [];
+          const url: string = hit._source.ORIGIN_FILE_URI.replace(" ", "%20") ?? "";
 
           const setidMatch = filename.match(/DataSet\s*(\d+)/i);
           const setid = setidMatch ? parseInt(setidMatch[1]!, 10) : 0;
@@ -75,6 +78,7 @@ export const search = {
           return {
             fileId,
             setid,
+            url,
             match: highlightArr
           };
         });
@@ -88,7 +92,7 @@ export const search = {
 
       return {
         amount: totalAmount,
-        matches: results
+        results: results
       };
     } finally {
       await session.close();
@@ -101,7 +105,7 @@ export const search = {
     offset: number = 0,
     limit: number = 10,
     regex: boolean = true
-  ): Promise<SearchResult> {
+  ): Promise<SearchResults> {
     throw new Error("searchDataset not implemented");
   }
 };

@@ -3,6 +3,7 @@
 This is a Node.js / TypeScript API wrapper for interacting with the Justice.gov Epstein DOJ disclosure datasets.
 
 Warning: This is in early development.
+Also note that the function signatures in this file might be outdated. Check the code if required.
 
 ---
 
