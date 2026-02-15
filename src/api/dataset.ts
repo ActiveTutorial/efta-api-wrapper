@@ -51,7 +51,7 @@ export const dataset = {
       let visibility: DatasetMeta["visibility"];
       if (status === 200) {
         visibility = "public";
-      } else if (status === 403) {
+      } else if (status === 403 || status === 503) {
         visibility = "private";
       } else if (status === 404) {
         visibility = "nonexistent";
