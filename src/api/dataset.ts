@@ -1,4 +1,5 @@
 import { initTLS, destroyTLS, Session, ClientIdentifier } from "node-tls-client";
+import * as cheerio from "cheerio";
 
 export type DatasetMeta = {
   visibility: "nonexistent" | "private" | "public";
@@ -27,14 +28,17 @@ export type FindFileResult = {
   fileIdAfter: string;
 };
 
+async function createSession() {
+  await initTLS();
+  return new Session({
+    clientIdentifier: ClientIdentifier.chrome_103,
+    timeout: 15000
+  });
+}
+
 export const dataset = {
   async getDatasetMeta(setId: number): Promise<DatasetMeta> {
-    await initTLS();
-
-    const session = new Session({
-      clientIdentifier: ClientIdentifier.chrome_103,
-      timeout: 15000
-    });
+    const session = await createSession();
 
     try {
       const url = `https://www.justice.gov/epstein/doj-disclosures/data-set-${setId}-files?page=0`;
@@ -75,8 +79,56 @@ export const dataset = {
     }
   },
 
-  async getDatasetPage(setId: number, page?: number): Promise<DatasetPage> {
-    throw new Error("getDatasetPage not implemented");
+  async getDatasetPage(setId: number, page: number = 0): Promise<DatasetPage> {
+    const session = await createSession();
+
+    try {
+      const url = `https://www.justice.gov/epstein/doj-disclosures/data-set-${setId}-files?page=${page}`;
+
+      const response = await session.get(url, {
+        headers: {
+          "accept-language": "e",
+          "y": "u",
+          "e": "?",
+          "user-agent": "Mozilla/4.0 (x11; linux x"
+        },
+        cookies: {
+          A: "A"
+        },
+        followRedirects: true
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Unexpected response code: ${response.status}`);
+      }
+
+      const $ = cheerio.load(response.body);
+
+      const files: DatasetPageItem[] = [];
+
+      $("a").each((_, element) => {
+        const href = $(element).attr("href");
+        const text = $(element).text().trim();
+
+        if (href && href.startsWith("https://www.justice.gov/epstein/files/")) {
+          files.push({
+            filename: text,
+            url: href
+          });
+        }
+      });
+
+      const currentPageText = $(".usa-current").first().text().trim();
+      const currentPage = parseInt(currentPageText, 10);
+
+      return {
+        page: currentPage,
+        files
+      };
+    } finally {
+      await session.close();
+      await destroyTLS();
+    }
   },
 
   async findFileInDataset(
