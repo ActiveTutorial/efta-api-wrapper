@@ -1,4 +1,9 @@
-import { initTLS, destroyTLS, Session, ClientIdentifier } from "node-tls-client";
+import {
+  initTLS,
+  destroyTLS,
+  Session,
+  ClientIdentifier,
+} from "node-tls-client";
 
 export type SearchResult = {
   fileId: string;
@@ -16,7 +21,7 @@ async function createSession() {
   await initTLS();
   return new Session({
     clientIdentifier: ClientIdentifier.chrome_103,
-    timeout: 15000
+    timeout: 15000,
   });
 }
 
@@ -24,7 +29,7 @@ export const search = {
   async searchFiles(
     keys: string[],
     offset: number = 0,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<SearchResults> {
     const session = await createSession();
     const results: SearchResult[] = [];
@@ -44,11 +49,11 @@ export const search = {
 
         const response = await session.get(url, {
           headers: {
-            "y": "u",
-            "e": "?",
-            "user-agent": "Mozilla/5.0 (X11; Linux x"
+            y: "u",
+            e: "?",
+            "user-agent": "Mozilla/5.0 (X11; Linux x",
           },
-          followRedirects: true
+          followRedirects: true,
         });
 
         if (response.status !== 200) {
@@ -65,23 +70,26 @@ export const search = {
         if (!hits.length) break;
 
         // Slice results according to offset/limit
-        const pageResults = hits.slice(skipInPage, skipInPage + remaining).map((hit: any) => {
-          const filename: string = hit._source?.key ?? "";
-          const highlightArr: string[] = hit.highlight?.content ?? [];
-          const url: string = hit._source.ORIGIN_FILE_URI.replace(" ", "%20") ?? "";
+        const pageResults = hits
+          .slice(skipInPage, skipInPage + remaining)
+          .map((hit: any) => {
+            const filename: string = hit._source?.key ?? "";
+            const highlightArr: string[] = hit.highlight?.content ?? [];
+            const url: string =
+              hit._source.ORIGIN_FILE_URI.replace(" ", "%20") ?? "";
 
-          const setidMatch = filename.match(/DataSet\s*(\d+)/i);
-          const setid = setidMatch ? parseInt(setidMatch[1]!, 10) : 0;
+            const setidMatch = filename.match(/DataSet\s*(\d+)/i);
+            const setid = setidMatch ? parseInt(setidMatch[1]!, 10) : 0;
 
-          const fileId = filename.split("/")[1]!.split(".")[0];
+            const fileId = filename.split("/")[1]!.split(".")[0];
 
-          return {
-            fileId,
-            setid,
-            url,
-            match: highlightArr
-          };
-        });
+            return {
+              fileId,
+              setid,
+              url,
+              match: highlightArr,
+            };
+          });
 
         results.push(...pageResults);
 
@@ -92,7 +100,7 @@ export const search = {
 
       return {
         amount: totalAmount,
-        results: results
+        results: results,
       };
     } finally {
       await session.close();
@@ -104,8 +112,8 @@ export const search = {
     query: string,
     offset: number = 0,
     limit: number = 10,
-    regex: boolean = true
+    regex: boolean = true,
   ): Promise<SearchResults> {
     throw new Error("searchDataset not implemented");
-  }
+  },
 };

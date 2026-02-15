@@ -8,7 +8,7 @@ export const download = {
   async downloadPdf(
     id: string,
     format: "image" | "pdf" | "text" | "link" = "pdf",
-    setId?: number
+    setId?: number,
   ): Promise<DownloadResult> {
     throw new Error("downloadPdf not implemented");
   },
@@ -16,8 +16,8 @@ export const download = {
   async downloadMultimedia(
     id: string,
     format: "raw" | "converted" | "link" = "raw",
-    setId?: number
+    setId?: number,
   ): Promise<DownloadResult> {
     throw new Error("downloadMultimedia not implemented");
-  }
+  },
 };

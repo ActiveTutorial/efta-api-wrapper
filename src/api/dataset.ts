@@ -1,4 +1,9 @@
-import { initTLS, destroyTLS, Session, ClientIdentifier } from "node-tls-client";
+import {
+  initTLS,
+  destroyTLS,
+  Session,
+  ClientIdentifier,
+} from "node-tls-client";
 import * as cheerio from "cheerio";
 
 export type DatasetMeta = {
@@ -32,7 +37,7 @@ async function createSession() {
   await initTLS();
   return new Session({
     clientIdentifier: ClientIdentifier.chrome_103,
-    timeout: 15000
+    timeout: 15000,
   });
 }
 
@@ -45,9 +50,9 @@ export const dataset = {
 
       const response = await session.get(url, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (Node.js)"
+          "User-Agent": "Mozilla/5.0 (Node.js)",
         },
-        followRedirects: true
+        followRedirects: true,
       });
 
       const status = response.status;
@@ -71,7 +76,7 @@ export const dataset = {
       return {
         visibility,
         lastModefied,
-        id: setId
+        id: setId,
       };
     } finally {
       await session.close();
@@ -80,13 +85,13 @@ export const dataset = {
   },
 
   async getDatasetPage(setId: number, page: number = 0): Promise<DatasetPage> {
-    if(page === -1) {
+    if (page === -1) {
       page = 2147483648;
     } else if (page < 0) {
       page = (await dataset.getDatasetPage(setId, -1)).page + page;
     }
     if (page < 0) {
-        page = 0;
+      page = 0;
     }
     const session = await createSession();
 
@@ -96,14 +101,14 @@ export const dataset = {
       const response = await session.get(url, {
         headers: {
           "accept-language": "e",
-          "y": "u",
-          "e": "?",
-          "user-agent": "Mozilla/4.0 (x11; linux x"
+          y: "u",
+          e: "?",
+          "user-agent": "Mozilla/4.0 (x11; linux x",
         },
         cookies: {
-          A: "A"
+          A: "A",
         },
-        followRedirects: true
+        followRedirects: true,
       });
 
       if (response.status !== 200) {
@@ -121,7 +126,7 @@ export const dataset = {
         if (href && href.startsWith("https://www.justice.gov/epstein/files/")) {
           files.push({
             filename: text,
-            url: href
+            url: href,
           });
         }
       });
@@ -131,7 +136,7 @@ export const dataset = {
 
       return {
         page: currentPage,
-        files
+        files,
       };
     } finally {
       await session.close();
@@ -141,8 +146,8 @@ export const dataset = {
 
   async findFileInDataset(
     name: string,
-    setId?: number
+    setId?: number,
   ): Promise<FindFileResult> {
     throw new Error("findFileInDataset not implemented");
-  }
+  },
 };
